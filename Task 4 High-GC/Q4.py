@@ -1,18 +1,8 @@
 def count(string, conditions):
-    _sum = 0
+    c = 0
     for cond in conditions:
-        _sum += string.count(cond)
-    return _sum
-
-
-def replace(string):
-    new_string = ''
-    for j in range(len(string)):
-        if string[j].isupper():
-            new_string += 'N'
-        else:
-            new_string += 'n'
-    return new_string
+        c += string.count(cond)
+    return c
 
 
 def read_fasta(filename):
@@ -26,14 +16,10 @@ def read_fasta(filename):
     with open(filename, 'r') as f:
         # Read in descriptor
         # noinspection PyShadowingNames
-        descriptor = f.readline().rstrip()
+        descriptor = f.readline()
 
         # Read in sequence, stripping the whitespace from each line
-        seq = ''
-        line = f.readline().rstrip()
-        while line != '':
-            seq += line
-            line = f.readline().rstrip()
+        seq = f.readline()
 
     return descriptor, seq
 
@@ -41,11 +27,12 @@ def read_fasta(filename):
 # Read sequence and define k
 print("Loading DNA sequence...")
 
-descriptor, s = read_fasta("../chr22.fa")
+descriptor, s = read_fasta("./chr22.fa")
 k = 100
 s_masked = s
 starts = []
 ends = []
+index_replace = [False] * len(s)
 
 print("Sequence loaded")
 print("Computing GC-contents...")
@@ -54,26 +41,32 @@ print("Computing GC-contents...")
 counter = 0
 for i in range(len(s) - k):
     sub_str = s[i:i + k]
-    gc_ratio = count(sub_str, "GC") / k
+    gc_ratio = count(sub_str, "GCgc") / k
     if gc_ratio > 0.70:
+        # Update array indices for replacement in task 2
+        for j in range(i, i + k):
+            index_replace[j] = True
         counter += 1
-        # Mark starting and ending position of high-GC strings for task 2
-        starts.append(i)
-        ends.append(i + 100)
 
-print(counter)  # 387292
+print(f"Number of substrings having high GC-content: {counter}")  # 499917
 
-print("Masking high-gc substrings...")
+print("Masking high-GC substrings...")
 # Task 2: Masking high-GC substrings
-count = 0
-for start, end in zip(starts, ends):
-    # replace the string with "N" or "n"s
-    s_masked = s_masked[:start] + replace(s_masked[start:end]) + s_masked[end:]
-    count += 1
-    if count % 10000 == 0:
-        print(f'{count} has been masked')
+s_masked = list(s_masked)
+for i in range(len(s)):
+    if index_replace[i]:
+        if s_masked[i].isupper():
+            s_masked[i] = 'N'
+        else:
+            s_masked[i] = 'n'
 
+
+# Combine list of characters to string
+s_masked = "".join(s_masked)
+
+print("Masking complete!")
+print("Outputting masked sequence...")
 # Output masked DNA string to file
-with open("chr22.masked.fa", "w") as file:
+with open("./chr22.masked.fa", "w") as file:
     print(">chr22", file=file)
     print(s_masked, file=file)
