@@ -3,8 +3,8 @@ import csv
 
 
 def read_codon(index, s):
-    if index + 3  < len(s):
-        return ''.join(s[index:(index + 3)])
+    if index + 3 < len(s):
+        return ''.join(s[index:(index + 3)]).upper()
     else:
         return None
 

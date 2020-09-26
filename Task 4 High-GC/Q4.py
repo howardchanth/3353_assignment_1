@@ -70,3 +70,4 @@ print("Outputting masked sequence...")
 with open("./chr22.masked.fa", "w") as file:
     print(">chr22", file=file)
     print(s_masked, file=file)
+print("Process finished!")

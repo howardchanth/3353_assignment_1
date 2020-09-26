@@ -9,7 +9,14 @@ def substitute(c):
         c = 'G'
     elif c == 'G':
         c = 'C'
-
+    elif c == 't':
+        c = 'a'
+    elif c == 'a':
+        c = 't'
+    elif c == 'c':
+        c = 'g'
+    elif c == 'g':
+        c = 'c'
     return c
 
 
